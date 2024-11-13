@@ -3,9 +3,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
-datadir = "C:\\Users\\sugarkhuu\\Downloads"
 
-df_ = pd.read_excel(datadir + "\\02_indiv.xlsx")
+df_ = pd.read_stata("data/02_indiv.dta")
 
 codename = {'q0102':'hh_role',
             'q0103':'gender',
