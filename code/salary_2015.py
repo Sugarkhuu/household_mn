@@ -4,28 +4,28 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-df_ = pd.read_stata("data_2015/02_indiv.dta")
+df_ = pd.read_stata("data/2016/02_indiv.dta")
 
 codename = {'q0102':'hh_role',
             'q0103':'gender',
             'q0105y':'age',
             'q0210':'educ',
-            'q0435':'work',
-            'q0436a':'w_1m_last',
-            'q0436b':'w_12m',
-            'q0436c':'w_bonus12',
-            'q0437':'h_month',
-            'q0102':'hh_member',
+            'q0416':'work',
+            'q0419a':'w_1m_last',
+            'q0419b':'w_12m',
+            'q0419c':'w_bonus12',
+            # 'q0437':'h_month',
+            # 'q0102':'hh_member',
             }
 
 df_.rename(columns= codename, inplace=True)
 
 df = df_[list(codename.values())]
 
-df['w_1m_avg'] = df['w_12m']/df['h_month']
+# df['w_1m_avg'] = df['w_12m']/df['h_month']
 
 w_norm = 1e6
-df[['w_1m_last','w_1m_avg','w_12m']] = df[['w_1m_last','w_1m_avg','w_12m']].div(w_norm)
+df[['w_1m_last','w_12m']] = df[['w_1m_last','w_12m']].div(w_norm)
 
 ed_dict = {
     'Боловсролгүй': 'Бгүй',
@@ -43,12 +43,12 @@ age_labels = ['Up to 30 y.o', '31-40 y.o', '41-50 y.o', '51+ y.o']
 # Add Age Group column to the DataFrame
 df['AGE GROUP'] = pd.cut(df['age'], bins=age_bins, labels=age_labels, right=False)
 
-df_plot = df[df['work']=='Тийм']
-median_wages = df.groupby('educ')['w_1m_avg'].median().sort_values(ascending=False)
+df_plot = df[df['work']=='ТИЙМ']
+median_wages = df.groupby('educ')['w_12m'].median().sort_values(ascending=False)
 col_order = ['Эмэгтэй','Эрэгтэй']
 row_order = ['Up to 30 y.o', '31-40 y.o', '41-50 y.o', '51+ y.o']
 g = sns.FacetGrid(df_plot, row='AGE GROUP', col='gender',row_order=row_order, col_order=col_order, margin_titles=True)
-g.map_dataframe(sns.boxplot, x='educ', y='w_1m_avg', order=median_wages.index, linewidth=1)
+g.map_dataframe(sns.boxplot, x='educ', y='w_12m', order=median_wages.index, linewidth=1)
 g.set_titles(col_template="{col_name}", row_template="{row_name}")
 g.set_axis_labels('', 'Wage (сая төгрөгөөр)')
 for ax in g.axes.flat:
@@ -58,7 +58,7 @@ for ax in g.axes.flat:
     # plt.set_yticks(np.arange(0, 5, 1))
     ax.axhline(y=1, color='black', linestyle='--')
 plt.yticks(np.arange(0, 7, 0.5))
-g.set(ylim=(0, 3))
+g.set(ylim=(0, 20))
 # plt.suptitle('2022 онд олсон сарын дундаж цалин (5 саяас дээш цалинтай нь зурагт харагдахгүй)')
 plt.suptitle('2022 онд олсон сарын дундаж цалин')
 plt.tight_layout(rect=[0, 0, 1, 0.95])  # Adjust the rect parameter as needed to provide space at the bottom
