@@ -2,9 +2,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+datadir = 'data/2023/'
+
 # Load datasets
-df_base = pd.read_stata(r"C:\Users\baldan\Downloads\basicvars.dta")
-df = pd.read_stata(r"C:\Users\baldan\Downloads\01_hhold.dta")
+df_base = pd.read_stata(datadir + r"basicvars.dta")
+df = pd.read_stata(datadir + r"01_hhold.dta")
 
 # Rename columns
 name_cols = {

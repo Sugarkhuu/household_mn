@@ -7,11 +7,11 @@ import roman
 
 def prep():
 
-    datadir = "C:\\Users\\radnaa\\Downloads\\"
+    datadir = 'data/2022/'
 
 
     # preprocessing
-    df_live = pd.read_excel(datadir + '03_livestock.xlsx')
+    df_live = pd.read_stata(datadir + '03_livestock.dta')
     df_live['sold_p']=df_live['q0605']/df_live['q0604']                 # price of animal sold
     medp = df_live.groupby('ani_id')['sold_p'].median().to_dict()       # assign median price to HH which didn't sell
     df_live['sold_p'].fillna(df_live['ani_id'].map(medp), inplace=True) # 
@@ -19,14 +19,14 @@ def prep():
     df_live['q0603_y'] = df_live['q0603'] * df_live['sold_p']           # value of used animal
     df_live.to_excel(datadir + '03_livestock_adj.xlsx')
 
-    df_by = pd.read_excel(datadir + '05_by_product.xlsx')
+    df_by = pd.read_stata(datadir + '05_by_product.dta')
     df_by['sold_p']=df_by['q0612']/df_by['q0611']                  # price of prod sold
     medp = df_by.groupby('byprod_id')['sold_p'].median().to_dict()       # assign median price to HH which didn't sell
     df_by['sold_p'].fillna(df_by['byprod_id'].map(medp), inplace=True) # 
     df_by['q0610_y'] = df_by['q0610'] * df_by['sold_p']
     df_by.to_excel(datadir + '05_by_product_adj.xlsx')
 
-    df_crop = pd.read_excel(datadir + '06_crop.xlsx')
+    df_crop = pd.read_stata(datadir + '06_crop.dta')
     df_crop['sold_p']=df_crop['q0623b']/df_crop['q0623a']
     medp = df_crop.groupby('crop_id')['sold_p'].median().to_dict() 
     df_crop['sold_p'].fillna(df_crop['crop_id'].map(medp), inplace=True) # 
@@ -34,7 +34,7 @@ def prep():
     df_crop.to_excel(datadir + '06_crop_adj.xlsx')
 
 
-    df_dir = pd.read_excel('mongolia\household\short_id.xlsx')
+    df_dir = pd.read_excel('data/short_id.xlsx')
 
     df = pd.DataFrame()
 
@@ -50,9 +50,11 @@ def prep():
             df = tmp
         else:
             df = pd.merge(df, tmp, on='identif', how='left') 
-    df.to_csv('income.csv') 
+    df.to_csv('data/income.csv') 
 
-df = pd.read_csv('mongolia\household\income.csv')
+prep()
+
+df = pd.read_csv('data/income.csv')
 
 df['live_profit'] = df[['live_y_used','live_y_sold']].sum(axis=1) - df['live_c']
 df['byprod_profit'] = df[['byprod_y_used','byprod_y_sold','byprod_y_psold']].sum(axis=1)
@@ -68,10 +70,10 @@ df['oth_all'] = df[[col for col in df.columns if col.startswith('oth')]].sum(axi
 df['profit_all'] = df[[col for col in df.columns if col.startswith('profit')]].sum(axis=1)
 
 df = df[['identif','w_all','st_all','sc_all','oth_all','profit_all','live_profit','byprod_profit','crop_profit','ent_profit']]
-df.to_csv('mongolia\household\income_short.csv')
+df.to_csv('data/income_short.csv')
 
 
-df = pd.read_csv('mongolia\household\income_short.csv')
+df = pd.read_csv('data/income_short.csv')
 df.iloc[:,1:] = df.iloc[:,1:]/1e6
 df['hh_inc'] = df.iloc[:,1:].sum(axis=1)
 
